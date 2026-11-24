@@ -76,3 +76,12 @@ def predict(model, r):
     with torch.no_grad():
         return model(torch.tensor(np.asarray(r, float).reshape(-1, 1))).numpy().ravel()
 
+def fit_ensemble(r, E, mode, n=10, **kw):
+    return [fit_member(r, E, mode, seed=s, **kw) for s in range(n)]
+
+def predict_ens(models, r):
+    P = np.array([predict(m, r) for m in models])
+    return P.mean(0), P.std(0)
+
+def rmse(a, b): return float(np.sqrt(np.mean((np.asarray(a) - np.asarray(b))**2)))
+
